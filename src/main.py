@@ -24,6 +24,7 @@ def write_to_messages_table(
     ]
     data = {key: message_text.source[key] for key in fields}
     data["content"] = message_text.source["content"]["body"]
+    data["origin_server_ts"] = data["origin_server_ts"] / 1000.0  # Convert to seconds
     fields = list(data.keys())
 
     result = session.execute(sqlalchemy.text(
