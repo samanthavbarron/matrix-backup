@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: matrix-backup-messages
+    volumes:
+      - ./data:/app/data
+    environment:
+      - MATRIX_USER=@user:matrix.org
+      - MATRIX_HOMESERVER=https://matrix.org
+      - MATRIX_PASSWORD=abcdefg
+      - DATABASE_URL=sqlite+pysqlite:////app/data/messages.db

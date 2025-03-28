@@ -3,6 +3,7 @@ import json
 import asyncio
 from nio import AsyncClient, RoomMessageText
 from sqlalchemy.orm import Session
+import os
 
 def write_to_messages_table(
     session,
@@ -102,5 +103,12 @@ async def main(
 
 if __name__ == "__main__":
     # Get the inputs from environment variables
-    # main()
-    pass
+    user = os.getenv("MATRIX_USER")
+    homeserver = os.getenv("MATRIX_HOMESERVER")
+    password = os.getenv("MATRIX_PASSWORD")
+    db_url = os.getenv("DATABASE_URL")
+
+    if not all([user, homeserver, password, db_url]):
+        raise ValueError("Missing one or more required environment variables: MATRIX_USER, MATRIX_HOMESERVER, MATRIX_PASSWORD, DATABASE_URL")
+
+    asyncio.run(main(user, homeserver, password, db_url))
