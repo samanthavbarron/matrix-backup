@@ -107,8 +107,22 @@ if __name__ == "__main__":
     homeserver = os.getenv("MATRIX_HOMESERVER")
     password = os.getenv("MATRIX_PASSWORD")
     db_url = os.getenv("DATABASE_URL")
+    backup_interval = os.getenv("BACKUP_INTERVAL", "300")  # Default to 5 minutes if not set
 
     if not all([user, homeserver, password, db_url]):
         raise ValueError("Missing one or more required environment variables: MATRIX_USER, MATRIX_HOMESERVER, MATRIX_PASSWORD, DATABASE_URL")
 
-    asyncio.run(main(user, homeserver, password, db_url))
+    try:
+        backup_interval = int(backup_interval)
+    except ValueError:
+        raise ValueError("BACKUP_INTERVAL must be an integer representing seconds")
+
+    async def run_backup_loop():
+        try:
+            while True:
+                await main(user, homeserver, password, db_url)
+                await asyncio.sleep(backup_interval)
+        except KeyboardInterrupt:
+            print("Backup loop interrupted. Exiting...")
+
+    asyncio.run(run_backup_loop())
