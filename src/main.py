@@ -32,6 +32,7 @@ def write_to_messages_table(
         INSERT INTO messages ({",".join(fields)})
         VALUES ({",".join([f":{key}" for key in fields])})
         """
+        .replace(":origin_server_ts", "TO_TIMESTAMP(:origin_server_ts)")
     ), [data])
     session.commit()
 
