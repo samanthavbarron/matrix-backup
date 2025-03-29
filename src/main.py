@@ -48,6 +48,17 @@ def write_to_rooms_table(session, room_id: str, room_name: str, latest_event_id:
     ), [{"room_id": room_id, "room_name": room_name, "latest_event_id": latest_event_id}])
     session.commit()
 
+def get_most_recent_event_id(session, room_id: str) -> str | None:
+    result = session.execute(sqlalchemy.text(
+        """
+        SELECT latest_event_id FROM rooms WHERE room_id = :room_id
+        """
+    ), [{"room_id": room_id}])
+    _res = result.fetchone()
+    if _res is None:
+        return None
+    return _res[0]
+
 async def main(
     user: str,
     homeserver: str,
@@ -104,6 +115,8 @@ async def main(
 
             messages_response = await client.room_messages(
                 room_id=room_id,
+                #start=get_most_recent_event_id(session, room_id),
+                limit=10_000,
             )
             logger.info(f"Fetched messages for room {room_id}.")
             latest_event_id = None

@@ -117,3 +117,11 @@ class TestImport(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(len(messages), 2)
             self.assertEqual(messages[0][4], "Test message 0")
             self.assertEqual(messages[1][4], "Test message 1")
+
+        # Run again
+        await main(
+            db_url=db_url,
+            homeserver=self.container_info['homeserver'],
+            user=self.container_info['user'],
+            password=self.container_info['password'],
+        )
